@@ -1,0 +1,12 @@
+[flake8]
+max-line-length = 100
+exclude =
+    .git,
+    __pycache__,
+    .venv,
+    venv,
+    alembic/versions,
+    frontend,
+    node_modules
+extend-ignore =
+per-file-ignores =

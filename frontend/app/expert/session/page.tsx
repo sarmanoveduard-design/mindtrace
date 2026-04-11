@@ -1,0 +1,85 @@
+type ExpertSessionListItem = {
+  session_id: string;
+  user_id: string;
+  status: string;
+  channel: string;
+  current_question_order: number;
+  answered_questions: number;
+  total_questions: number;
+  has_final_profile: boolean;
+  final_profile_status: string | null;
+};
+
+type ExpertSessionsListResponse = {
+  sessions: ExpertSessionListItem[];
+};
+
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8000";
+
+async function getExpertSessions(): Promise<ExpertSessionsListResponse> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/v1/expert/sessions`,
+    {
+      cache: "no-store",
+    },
+  );
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    throw new Error(
+      `Failed to load expert sessions. Status: ${response.status}. Body: ${errorBody}`,
+    );
+  }
+
+  return response.json();
+}
+
+export default async function ExpertSessionsPage() {
+  const data = await getExpertSessions();
+
+  return (
+    <main
+      style={{
+        padding: 24,
+        maxWidth: 1100,
+        margin: "0 auto",
+        fontFamily: "Arial, sans-serif",
+      }}
+    >
+      <h1>MindTrace Expert Sessions</h1>
+
+      <div style={{ marginTop: 24 }}>
+        {data.sessions.map((session) => (
+          <article
+            key={session.session_id}
+            style={{
+              border: "1px solid #ccc",
+              borderRadius: 8,
+              padding: 16,
+              marginBottom: 16,
+            }}
+          >
+            <h2 style={{ marginTop: 0 }}>{session.session_id}</h2>
+            <p>User ID: {session.user_id}</p>
+            <p>Status: {session.status}</p>
+            <p>Channel: {session.channel}</p>
+            <p>
+              Progress: {session.answered_questions}/{session.total_questions}
+            </p>
+            <p>
+              Final profile:{" "}
+              {session.has_final_profile
+                ? session.final_profile_status
+                : "not ready"}
+            </p>
+
+            <a href={`/expert/session/${session.session_id}`}>
+              Открыть экспертную карточку
+            </a>
+          </article>
+        ))}
+      </div>
+    </main>
+  );
+}

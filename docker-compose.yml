@@ -1,0 +1,125 @@
+services:
+  mindtrace-redis:
+    image: redis:7-alpine
+    container_name: mindtrace-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  mindtrace-postgres:
+    image: postgres:16-alpine
+    container_name: mindtrace-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: mindtrace
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - mindtrace_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d mindtrace"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  mindtrace-bootstrap:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: mindtrace-bootstrap
+    environment:
+      APP_NAME: MindTrace API
+      APP_ENV: prod
+      APP_DEBUG: "false"
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@mindtrace-postgres:5432/mindtrace
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-}
+      OPENAI_DEFAULT_MODEL: gpt-5.4-mini
+      CELERY_BROKER_URL: redis://mindtrace-redis:6379/0
+      CELERY_RESULT_BACKEND: redis://mindtrace-redis:6379/1
+      BACKEND_CORS_ORIGINS: '["http://localhost:3000","http://127.0.0.1:3000"]'
+    depends_on:
+      mindtrace-postgres:
+        condition: service_healthy
+    command: >
+      sh -c "alembic upgrade head &&
+             python -m app.scripts.seed_prompt_versions &&
+             python -m app.scripts.seed_taxonomy"
+
+  mindtrace-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: mindtrace-backend
+    restart: unless-stopped
+    environment:
+      APP_NAME: MindTrace API
+      APP_ENV: prod
+      APP_DEBUG: "false"
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@mindtrace-postgres:5432/mindtrace
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-}
+      OPENAI_DEFAULT_MODEL: gpt-5.4-mini
+      CELERY_BROKER_URL: redis://mindtrace-redis:6379/0
+      CELERY_RESULT_BACKEND: redis://mindtrace-redis:6379/1
+      BACKEND_CORS_ORIGINS: '["http://localhost:3000","http://127.0.0.1:3000"]'
+    depends_on:
+      mindtrace-postgres:
+        condition: service_healthy
+      mindtrace-redis:
+        condition: service_started
+      mindtrace-bootstrap:
+        condition: service_completed_successfully
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+
+  mindtrace-worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: mindtrace-worker
+    restart: unless-stopped
+    environment:
+      APP_NAME: MindTrace API
+      APP_ENV: prod
+      APP_DEBUG: "false"
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@mindtrace-postgres:5432/mindtrace
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-}
+      OPENAI_DEFAULT_MODEL: gpt-5.4-mini
+      CELERY_BROKER_URL: redis://mindtrace-redis:6379/0
+      CELERY_RESULT_BACKEND: redis://mindtrace-redis:6379/1
+      BACKEND_CORS_ORIGINS: '["http://localhost:3000","http://127.0.0.1:3000"]'
+    depends_on:
+      mindtrace-postgres:
+        condition: service_healthy
+      mindtrace-redis:
+        condition: service_started
+      mindtrace-bootstrap:
+        condition: service_completed_successfully
+    command: celery -A app.celery_app:celery_app worker --loglevel=info --pool=solo
+
+  mindtrace-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_BASE_URL: http://localhost:8000
+    container_name: mindtrace-frontend
+    restart: unless-stopped
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:8000
+      INTERNAL_API_BASE_URL: http://mindtrace-backend:8000
+    depends_on:
+      mindtrace-backend:
+        condition: service_started
+      mindtrace-bootstrap:
+        condition: service_completed_successfully
+    ports:
+      - "3000:3000"
+
+volumes:
+  mindtrace_postgres_data:
