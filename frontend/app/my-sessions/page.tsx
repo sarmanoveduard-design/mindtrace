@@ -6,17 +6,12 @@ import { API_BASE_URL } from "../../lib/config";
 
 type UserSessionListItem = {
   session_id: string;
-  status: string;
-  channel: string;
-  current_question_order: number;
   answered_questions: number;
   total_questions: number;
   has_final_profile: boolean;
-  final_profile_status: string | null;
 };
 
 type UserSessionsListResponse = {
-  user_id: string;
   sessions: UserSessionListItem[];
 };
 
@@ -65,7 +60,6 @@ export default function MySessionsPage() {
         const userId = getVisitorUserId();
         if (userId === null) {
           setData({
-            user_id: "",
             sessions: [],
           });
           return;
@@ -120,18 +114,13 @@ export default function MySessionsPage() {
                 marginBottom: 16,
               }}
             >
-              <h2 style={{ marginTop: 0 }}>{session.session_id}</h2>
-              <p>Status: {session.status}</p>
-              <p>Channel: {session.channel}</p>
+              <h2 style={{ marginTop: 0 }}>Сессия</h2>
               <p>
-                Progress: {session.answered_questions}/
+                Прогресс: {session.answered_questions}/
                 {session.total_questions}
               </p>
               <p>
-                Final profile:{" "}
-                {session.has_final_profile
-                  ? session.final_profile_status
-                  : "not ready"}
+                Результат: {session.has_final_profile ? "готов" : "ещё не готов"}
               </p>
 
               <div style={{ display: "flex", gap: 16, marginTop: 12 }}>

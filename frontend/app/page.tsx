@@ -4,9 +4,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { API_BASE_URL } from "../lib/config";
 
-
-const DEFAULT_USER_ID = "b9a194ec-8144-455c-beb9-8de7b33a2a88";
-
 type GetOrCreateSessionResponse = {
   id: string;
   user_id: string;
@@ -19,15 +16,15 @@ type GetOrCreateSessionResponse = {
 
 function getOrCreateVisitorUserId(): string {
   const storageKey = "mindtrace_visitor_user_id";
-  const existingValue = window.localStorage.getItem(storageKey);
+  const existing = window.localStorage.getItem(storageKey);
 
-  if (existingValue && existingValue.trim().length > 0) {
-    return existingValue;
+  if (existing && existing.trim().length > 0) {
+    return existing;
   }
 
-  const newValue = crypto.randomUUID();
-  window.localStorage.setItem(storageKey, newValue);
-  return newValue;
+  const newUserId = crypto.randomUUID();
+  window.localStorage.setItem(storageKey, newUserId);
+  return newUserId;
 }
 
 export default function HomePage() {
@@ -40,9 +37,9 @@ export default function HomePage() {
     setIsSubmitting(true);
     setErrorText("");
 
-    const visitorUserId = getOrCreateVisitorUserId();
-    
     try {
+      const userId = getOrCreateVisitorUserId();
+
       const response = await fetch(
         `${API_BASE_URL}/api/v1/sessions/get-or-create`,
         {
@@ -51,8 +48,8 @@ export default function HomePage() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            user_id: visitorUserId,
-          channel: "web",
+            user_id: userId,
+            channel: "web",
           }),
         },
       );
@@ -79,11 +76,18 @@ export default function HomePage() {
   }
 
   return (
-    <main style={{ padding: 24, fontFamily: "Arial, sans-serif" }}>
+    <main
+      style={{
+        padding: "40px 20px",
+        maxWidth: 760,
+        margin: "0 auto",
+        fontFamily: "Arial, sans-serif",
+      }}
+    >
       <h1>MindTrace</h1>
       <p>Нажмите, чтобы начать диагностику.</p>
 
-      <div style={{ marginTop: 24, maxWidth: 480 }}>
+      <div style={{ marginTop: 24 }}>
         <button
           type="button"
           onClick={handleStartSession}

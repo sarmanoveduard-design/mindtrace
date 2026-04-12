@@ -197,7 +197,7 @@ export default function SessionPage() {
   if (isLoading && !overview) {
     return (
       <main style={{ padding: 24, fontFamily: "Arial, sans-serif" }}>
-        <h1>MindTrace Session</h1>
+        <h1>Диагностика мышления</h1>
         <p>Загрузка...</p>
       </main>
     );
@@ -206,7 +206,7 @@ export default function SessionPage() {
   if (!overview) {
     return (
       <main style={{ padding: 24, fontFamily: "Arial, sans-serif" }}>
-        <h1>MindTrace Session</h1>
+        <h1>Диагностика мышления</h1>
         <p style={{ color: "red" }}>
           {errorText || "Не удалось загрузить сессию."}
         </p>
@@ -223,7 +223,7 @@ export default function SessionPage() {
           fontFamily: "Arial, sans-serif",
         }}
       >
-      <h1>MindTrace Session</h1>
+      <h1>Диагностика мышления</h1>
 
       <section style={{ marginTop: 24 }}>
         <p style={{ fontSize: 18, margin: 0 }}>

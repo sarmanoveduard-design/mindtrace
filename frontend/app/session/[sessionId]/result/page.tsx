@@ -2,47 +2,7 @@ import Link from "next/link";
 import { API_BASE_URL } from "../../../../lib/config";
 
 type SessionOverview = {
-  status: {
-    session_id: string;
-    taxonomy_version_id: string;
-    status: string;
-    channel: string;
-    current_question_order: number;
-    answered_questions: number;
-    total_questions: number;
-    has_final_profile: boolean;
-    final_profile_status: string | null;
-    current_question: {
-      id: string;
-      code: string;
-      order_no: number;
-      title: string;
-      description: string | null;
-      question_type: string;
-      is_required: boolean;
-    } | null;
-  };
-  questions: {
-    session_id: string;
-    taxonomy_version_id: string;
-    current_question_order: number;
-    questions: Array<{
-      id: string;
-      code: string;
-      order_no: number;
-      title: string;
-      description: string | null;
-      question_type: string;
-      is_required: boolean;
-      is_active: boolean;
-      has_answer: boolean;
-      answer_id: string | null;
-      revision_no: number | null;
-      ai_status: string | null;
-      is_current_question: boolean;
-    }>;
-  };
-    final_profile: {
+  final_profile: {
     schema_version: string;
     taxonomy_version_id: string;
     session_id: string;
@@ -78,7 +38,6 @@ type SessionOverview = {
       growth_edges: string[];
       disclaimers: string[];
     };
-    overall_confidence: number;
   } | null;
 };
 
@@ -117,7 +76,7 @@ export default async function SessionResultPage(
   if (!overview.final_profile) {
     return (
       <main style={{ padding: 24, fontFamily: "Arial, sans-serif" }}>
-        <h1>MindTrace Result</h1>
+        <h1>Результат диагностики</h1>
         <p>Финальный профиль ещё не готов.</p>
       </main>
     );
@@ -199,16 +158,6 @@ export default async function SessionResultPage(
             <li key={item}>{item}</li>
           ))}
         </ul>
-      </section>
-
-      <section style={{ marginTop: 32 }}>
-        <h2>Метаданные</h2>
-        <p>Session ID: {overview.status.session_id}</p>
-        <p>
-          Progress: {overview.status.answered_questions}/
-          {overview.status.total_questions}
-        </p>
-        <p>Overall confidence: {overview.final_profile.overall_confidence}</p>
       </section>
     </main>
   );
