@@ -75,7 +75,14 @@ export default async function SessionResultPage(
 
   if (!overview.final_profile) {
     return (
-      <main style={{ padding: 24, fontFamily: "Arial, sans-serif" }}>
+      <main
+        style={{
+          padding: 24,
+          maxWidth: 900,
+          margin: "0 auto",
+          fontFamily: "Arial, sans-serif",
+        }}
+      >
         <h1>Результат диагностики</h1>
         <p>Финальный профиль ещё не готов.</p>
       </main>

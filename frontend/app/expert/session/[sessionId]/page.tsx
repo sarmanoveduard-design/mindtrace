@@ -74,7 +74,7 @@ export default async function ExpertSessionPage(
            gap: 16,
           }}
         >
-          <h1 style={{ margin: 0 }}>MindTrace Expert Detail</h1>
+          <h1 style={{ margin: 0 }}>Экспертная карточка</h1>
 
           <Link href="/expert/sessions">
             Назад к списку сессий
@@ -82,14 +82,14 @@ export default async function ExpertSessionPage(
         </div>
 
       <section style={{ marginTop: 24 }}>
-        <h2>Session</h2>
+        <h2>Сессия</h2>
         <p>Session ID: {data.session_id}</p>
-        <p>Status: {data.status}</p>
-        <p>Taxonomy Version ID: {data.taxonomy_version_id}</p>
+        <p>Статус: {data.status}</p>
+        <p>ID версии таксономии: {data.taxonomy_version_id}</p>
       </section>
 
       <section style={{ marginTop: 32 }}>
-        <h2>Answers and Extractions</h2>
+        <h2>Ответы и извлечения</h2>
 
         {data.answers.map((answer) => (
           <article
@@ -128,33 +128,37 @@ export default async function ExpertSessionPage(
         ))}
       </section>
 
-      <section style={{ marginTop: 32 }}>
-        <h2>Session Aggregate</h2>
-        <pre
-          style={{
-            background: "#f5f5f5",
-            padding: 12,
-            overflowX: "auto",
-            whiteSpace: "pre-wrap",
-          }}
-        >
-          {JSON.stringify(data.session_aggregate, null, 2)}
-        </pre>
-      </section>
+      {data.session_aggregate ? (
+        <section style={{ marginTop: 32 }}>
+          <h2>Агрегация сессии</h2>
+          <pre
+            style={{
+              background: "#f5f5f5",
+              padding: 12,
+              overflowX: "auto",
+              whiteSpace: "pre-wrap",
+            }}
+          >
+            {JSON.stringify(data.session_aggregate, null, 2)}
+          </pre>
+        </section>
+      ) : null}
 
-      <section style={{ marginTop: 32 }}>
-        <h2>Final Profile</h2>
-        <pre
-          style={{
-            background: "#f5f5f5",
-            padding: 12,
-            overflowX: "auto",
-            whiteSpace: "pre-wrap",
-          }}
-        >
-          {JSON.stringify(data.final_profile, null, 2)}
-        </pre>
-      </section>
+      {data.final_profile ? (
+        <section style={{ marginTop: 32 }}>
+          <h2>Финальный профиль</h2>
+          <pre
+            style={{
+              background: "#f5f5f5",
+              padding: 12,
+              overflowX: "auto",
+              whiteSpace: "pre-wrap",
+            }}
+          >
+            {JSON.stringify(data.final_profile, null, 2)}
+          </pre>
+        </section>
+      ) : null}
     </main>
   );
 }

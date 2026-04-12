@@ -47,7 +47,7 @@ export default async function ExpertSessionsPage() {
         fontFamily: "Arial, sans-serif",
       }}
     >
-      <h1>MindTrace Expert Sessions</h1>
+      <h1>Экспертные сессии</h1>
 
       <div style={{ marginTop: 24 }}>
         {data.sessions.map((session) => (
@@ -60,18 +60,12 @@ export default async function ExpertSessionsPage() {
               marginBottom: 16,
             }}
           >
-            <h2 style={{ marginTop: 0 }}>{session.session_id}</h2>
-            <p>User ID: {session.user_id}</p>
-            <p>Status: {session.status}</p>
-            <p>Channel: {session.channel}</p>
+            <h2 style={{ marginTop: 0 }}>Сессия</h2>
             <p>
-              Progress: {session.answered_questions}/{session.total_questions}
+              Прогресс: {session.answered_questions}/{session.total_questions}
             </p>
             <p>
-              Final profile:{" "}
-              {session.has_final_profile
-                ? session.final_profile_status
-                : "not ready"}
+              Результат: {session.has_final_profile ? "готов" : "ещё не готов"}
             </p>
 
             <div style={{ display: "flex", gap: 16, marginTop: 12 }}>
