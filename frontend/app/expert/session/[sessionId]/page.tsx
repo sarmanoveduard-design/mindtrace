@@ -180,33 +180,43 @@ export default async function ExpertSessionPage(
 
       {data.session_aggregate ? (
         <section style={{ marginTop: 32 }}>
-          <h2>Агрегация сессии</h2>
-          <pre
-            style={{
-              background: "#f5f5f5",
-              padding: 12,
-              overflowX: "auto",
-              whiteSpace: "pre-wrap",
-            }}
-          >
-            {JSON.stringify(data.session_aggregate, null, 2)}
-          </pre>
+          <details>
+            <summary style={{ cursor: "pointer", fontWeight: 600 }}>
+              Агрегация сессии
+            </summary>
+            <pre
+              style={{
+                marginTop: 12,
+                background: "#f5f5f5",
+                padding: 12,
+                overflowX: "auto",
+                whiteSpace: "pre-wrap",
+              }}
+            >
+              {JSON.stringify(data.session_aggregate, null, 2)}
+            </pre>
+          </details>
         </section>
       ) : null}
 
       {data.final_profile ? (
         <section style={{ marginTop: 32 }}>
-          <h2>Финальный профиль</h2>
-          <pre
-            style={{
-              background: "#f5f5f5",
-              padding: 12,
-              overflowX: "auto",
-              whiteSpace: "pre-wrap",
-            }}
-          >
-            {JSON.stringify(data.final_profile, null, 2)}
-          </pre>
+          <details open>
+            <summary style={{ cursor: "pointer", fontWeight: 600 }}>
+              Финальный профиль
+            </summary>
+            <pre
+              style={{
+                marginTop: 12,
+                background: "#f5f5f5",
+                padding: 12,
+                overflowX: "auto",
+                whiteSpace: "pre-wrap",
+              }}
+            >
+              {JSON.stringify(data.final_profile, null, 2)}
+            </pre>
+          </details>
         </section>
       ) : null}
     </main>
