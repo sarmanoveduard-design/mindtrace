@@ -45,6 +45,22 @@ async function getExpertSessionDetail(
   return response.json();
 }
 
+function formatStatus(value: string | null | undefined): string {
+  if (!value) {
+    return "—";
+  }
+
+  return value.replaceAll("_", " ");
+}
+
+function formatConfidence(value: number | null | undefined): string {
+  if (typeof value !== "number") {
+    return "—";
+  }
+
+  return `${Math.round(value * 100)}%`;
+}
+
 type PageProps = {
   params: Promise<{
     sessionId: string;
@@ -66,26 +82,32 @@ export default async function ExpertSessionPage(
         fontFamily: "Arial, sans-serif",
       }}
     >
-        <div
-         style={{
-           display: "flex",
-           alignItems: "center",
-           justifyContent: "space-between",
-           gap: 16,
-          }}
-        >
-          <h1 style={{ margin: 0 }}>Экспертная карточка</h1>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 16,
+        }}
+      >
+        <h1 style={{ margin: 0 }}>Экспертная карточка</h1>
 
-          <Link href="/expert/sessions">
-            Назад к списку сессий
-          </Link>
-        </div>
+        <Link href="/expert/sessions">
+          Назад к списку сессий
+        </Link>
+      </div>
 
       <section style={{ marginTop: 24 }}>
         <h2>Сессия</h2>
-        <p>Session ID: {data.session_id}</p>
-        <p>Статус: {data.status}</p>
-        <p>ID версии таксономии: {data.taxonomy_version_id}</p>
+        <p>Статус: {formatStatus(data.status)}</p>
+        <p>Всего ответов: {data.answers.length}</p>
+        <p>
+          Извлечения готовы:{" "}
+          {
+            data.answers.filter((answer) => answer.extraction?.status).length
+          }{" "}
+          / {data.answers.length}
+        </p>
       </section>
 
       <section style={{ marginTop: 32 }}>
@@ -101,29 +123,57 @@ export default async function ExpertSessionPage(
               borderRadius: 8,
             }}
           >
-            <h3>
+            <h3 style={{ marginTop: 0, marginBottom: 8 }}>
               {answer.question_code}: {answer.question_title}
             </h3>
-            <p>Answer ID: {answer.answer_id}</p>
-            <p>Revision: {answer.revision_no}</p>
-            <p>AI status: {answer.ai_status}</p>
 
-            <h4>Raw answer</h4>
+            <p style={{ marginTop: 0 }}>
+              AI статус: {formatStatus(answer.ai_status)}
+            </p>
+
+            <h4>Ответ пользователя</h4>
             <p style={{ whiteSpace: "pre-wrap" }}>
               {answer.answer_text ?? "-"}
             </p>
 
-            <h4>Extraction</h4>
-            <pre
-              style={{
-                background: "#f5f5f5",
-                padding: 12,
-                overflowX: "auto",
-                whiteSpace: "pre-wrap",
-              }}
-            >
-              {JSON.stringify(answer.extraction, null, 2)}
-            </pre>
+            <h4>Извлечение</h4>
+            {answer.extraction ? (
+              <>
+                <p style={{ marginBottom: 8 }}>
+                  Статус: {formatStatus(answer.extraction.status)}
+                </p>
+                <p style={{ marginTop: 0 }}>
+                  Confidence:{" "}
+                  {formatConfidence(answer.extraction.confidence_score)}
+                </p>
+
+                {answer.extraction.normalized_output ? (
+                  <>
+                    <h4 style={{ marginBottom: 8 }}>
+                      Нормализованный результат
+                    </h4>
+                    <pre
+                      style={{
+                        background: "#f5f5f5",
+                        padding: 12,
+                        overflowX: "auto",
+                        whiteSpace: "pre-wrap",
+                      }}
+                    >
+                      {JSON.stringify(
+                        answer.extraction.normalized_output,
+                        null,
+                        2,
+                      )}
+                    </pre>
+                  </>
+                ) : (
+                  <p>Нормализованный результат пока отсутствует.</p>
+                )}
+              </>
+            ) : (
+              <p>Извлечение пока отсутствует.</p>
+            )}
           </article>
         ))}
       </section>
