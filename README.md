@@ -90,6 +90,7 @@ DATABASE_URL=postgresql+psycopg://postgres:postgres@localhost:5432/mindtrace
 
 OPENAI_API_KEY=your_openai_api_key_here
 OPENAI_BASE_URL=
+
 # Fallback model only. Stage-specific models are defined in prompt_versions:
 # answer_extract -> gpt-5.4-mini
 # session_aggregate -> gpt-5.4-mini
