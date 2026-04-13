@@ -57,7 +57,6 @@ def get_or_create_session(
     existing_stmt = (
         select(SessionModel)
         .where(SessionModel.user_id == user_id)
-        .where(SessionModel.channel == channel)
         .where(SessionModel.status.in_(ACTIVE_SESSION_STATUSES))
         .order_by(SessionModel.created_at.desc())
         .limit(1)

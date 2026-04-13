@@ -195,3 +195,30 @@ OPENAI_BASE_URL=
 
 docker compose down -v
 docker compose up --build
+
+## MVP acceptance criteria
+
+Текущая версия MVP должна соответствовать следующим базовым критериям приёмки:
+
+- Question set MVP: до 38 вопросов в активной taxonomy draft-версии.
+- Система должна сохранять ответы, промежуточные AI-результаты, агрегат сессии и final profile.
+- По каждому типу мышления final profile должен возвращать бинарный output: `present` / `absent`.
+- Итоговый профиль должен содержать как минимум `thinking_types`, `user_view` и `expert_view`.
+- Telegram + Web остаются целевыми каналами MVP, при этом основной диагностический flow проходит через web / Mini App интерфейс.
+- Экспертная панель входит в MVP как базовый слой проверки результатов.
+
+Целевые KPI для MVP:
+
+- Agreement with expert: не ниже 80%.
+- Reproducibility: не ниже 90% при одинаковом input bundle, prompt version, taxonomy version и model.
+- AI analysis latency for single answer: p95 не более 5 секунд.
+- Completed sessions rate: не ниже 95% для корректно начатых пользовательских сессий.
+
+Что относится к phase 2, а не к текущему MVP:
+
+- адаптивный опрос
+- fine-tuning собственной модели
+- сложная BI-аналитика
+- enterprise-роли и расширенный RBAC
+- recommendation engine
+- advanced A/B testing

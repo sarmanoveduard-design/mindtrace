@@ -49,7 +49,7 @@ export default function HomePage() {
           },
           body: JSON.stringify({
             user_id: userId,
-            channel: "web",
+            channel: "mini_app",
           }),
         },
       );
